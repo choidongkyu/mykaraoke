@@ -3,29 +3,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SongActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".SongActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
-    <VideoView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.3"/>
+        android:layout_height="500dp"
+        tools:ignore="WebViewLayout">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.05"/>
+        <WebView
+            android:id="@+id/webView"
+            android:layout_width="match_parent"
+            android:layout_height="500dp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_centerInParent="true"
-        android:background="@color/white"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="285dp"
+            android:background="#2F2F30"></View>
+    </FrameLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,21 +35,17 @@
         android:layout_weight="0.5"
         android:orientation="vertical">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"/>
-
         <Button
             android:id="@+id/recordButton"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:text="녹음시작"
-            android:drawableLeft="@drawable/ic_mic_off"/>
+            android:background="@color/gray"
+            android:text="녹음시작" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.5"/>
+            android:layout_weight="0.5" />
 
     </LinearLayout>
 

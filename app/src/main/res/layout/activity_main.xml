@@ -1,20 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
 
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".MainActivity"
-    android:orientation="vertical">
-
-    <FrameLayout
-        android:id="@+id/frameLayout"
+    <TextView
+        android:id="@+id/latestSongText"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#2B2A2A"
-        android:layout_above="@+id/mainTabLayout">
-    </FrameLayout>
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:text="최신 가요"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@id/latestSongList"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_weight="0.06" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/latestSongList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:scrollbars="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/popularMusicText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/latestSongText"
+        app:layout_constraintVertical_weight="0.36" />
+
+    <TextView
+        android:id="@+id/popularMusicText"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="인기 가요"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toTopOf="@id/popularMusicList"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/latestSongList"
+        app:layout_constraintVertical_weight="0.04" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/popularMusicList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:scrollbars="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/mrTrotText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/popularMusicText"
+        app:layout_constraintVertical_weight="0.17" />
+
+    <TextView
+        android:id="@+id/mrTrotText"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="내일은 미스터트롯"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toTopOf="@id/trotMusicList"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/popularMusicList"
+        app:layout_constraintVertical_weight="0.04" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/trotMusicList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:scrollbars="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/mainTabLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mrTrotText"
+        app:layout_constraintVertical_weight="0.17" />
 
 
     <com.google.android.material.tabs.TabLayout
@@ -23,32 +94,41 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/black"
-        app:tabTextColor="@color/gray"
+        app:layout_constraintTop_toBottomOf ="@+id/trotMusicList"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:tabIconTint="@color/selector_color"
         app:tabSelectedTextColor="@color/white"
-        app:tabIconTint="@color/selector_color">
+        app:tabTextColor="@color/gray">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="인기/최신 가요"
-            android:icon="@drawable/ic_home" />
+            android:icon="@drawable/ic_home"
+            android:text="인기/최신 가요" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="검색"
-            android:icon="@drawable/ic_search"/>
+            android:icon="@drawable/ic_search"
+            android:text="검색" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="보관함"
-            android:icon="@drawable/ic_library_music"/>
+            android:icon="@drawable/ic_library_music"
+            android:text="보관함" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="노래"
-            android:icon="@drawable/ic_mic"/>
+            android:icon="@drawable/ic_mic"
+            android:text="노래" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_baseline_settings_24"
+            android:text="설정" />
     </com.google.android.material.tabs.TabLayout>
-</RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

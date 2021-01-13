@@ -88,7 +88,7 @@ public class SongItemAdapter extends RecyclerView.Adapter<SongItemAdapter.ViewHo
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(MainActivity.TAG, "Element " + getAdapterPosition() + " clicked.");
+
                 }
             });
         }

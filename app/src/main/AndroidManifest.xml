@@ -3,6 +3,7 @@
     package="com.example.mykaraoke">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.NoActionBar">
-        <activity android:name=".SongActivity"></activity>
+        <activity android:name=".SettingActivity"></activity>
+        <activity android:name=".SearchActivity" />
+        <activity android:name=".LibraryActivity" />
+        <activity android:name=".SongActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
