@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -19,16 +20,18 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 
 import com.example.mykaraoke.thread.RecordThread;
+import com.example.mykaraoke.util.Config;
 
 //TODO activity에 대한 설명
 public class SongActivity extends AppCompatActivity {
     private static final String TAG = SongActivity.class.getName();
     private final String[] permissions = {Manifest.permission.RECORD_AUDIO};
-    SharedPreferences sharedPref;
-    Button recordButton;
-    RecordThread recordThread;
-    WebView webView;
-    WebSettings webSettings;
+    private SharedPreferences sharedPref;
+    private Button recordButton;
+    private RecordThread recordThread;
+    private WebView webView;
+    private WebSettings webSettings;
+    private String videoID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,9 @@ public class SongActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         recordButton = findViewById(R.id.recordButton); //녹음 버튼
         recordThread = new RecordThread(this);
+
+        Intent intent = getIntent();
+        videoID = intent.getStringExtra(Config.VIDEO_ID);//recyclerview로부터 VideoID를 intent로 전달 받음
 
         toolbar.setTitle(""); //toolbar 제목 제거
         setSupportActionBar(toolbar);//툴바 생성
@@ -74,22 +80,22 @@ public class SongActivity extends AppCompatActivity {
             }
         }
 
-        webView = (WebView) findViewById(R.id.webView);
-
+        //금영노래방 저작권으로 인해 youtubePlayer로 재생 불가능하여 웹뷰로 우회하여 재생
+        webView = findViewById(R.id.webView);
         webView.setWebViewClient(new WebViewClient()); // 클릭시 새창 안뜨게
         webSettings = webView.getSettings(); //세부 세팅 등록
-        webSettings.setJavaScriptEnabled(true); // 웹페이지 자바스클비트 허용 여부
+        webSettings.setJavaScriptEnabled(true); // 웹페이지 자바스크립트 허용 여부
         webSettings.setSupportMultipleWindows(false); // 새창 띄우기 허용 여부
         webSettings.setJavaScriptCanOpenWindowsAutomatically(false); // 자바스크립트 새창 띄우기(멀티뷰) 허용 여부
         webSettings.setLoadWithOverviewMode(true); // 메타태그 허용 여부
         webSettings.setUseWideViewPort(true); // 화면 사이즈 맞추기 허용 여부
         webSettings.setSupportZoom(false); // 화면 줌 허용 여부
         webSettings.setBuiltInZoomControls(false); // 화면 확대 축소 허용 여부
-        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN); // 컨텐츠 사이즈 맞추기
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE); // 브라우저 캐시 허용 여부
         webSettings.setDomStorageEnabled(true); // 로컬저장소 허용 여부
 
-        webView.loadUrl("https://www.youtube.com/watch?v=J4182DQwIjQ"); // 웹뷰에 표시할 웹사이트 주소, 웹뷰 시작
+        webView.loadUrl("https://www.youtube.com/watch?v=" + videoID); // video 재생 시작
+
     }
 
     @Override

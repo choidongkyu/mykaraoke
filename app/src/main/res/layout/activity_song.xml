@@ -24,8 +24,10 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="285dp"
-            android:background="#2F2F30"></View>
+            android:layout_marginTop="280dp"
+            android:background="#2F2F30"
+            android:clickable="true">
+        </View>
     </FrameLayout>
 
 

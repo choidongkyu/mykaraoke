@@ -13,20 +13,19 @@ import android.os.Bundle;
 
 import com.example.mykaraoke.adapter.SongItem;
 import com.example.mykaraoke.adapter.SongItemAdapter;
+import com.example.mykaraoke.util.Config;
 import com.example.mykaraoke.util.PagerSnapWithSpanCountHelper;
 import com.example.mykaraoke.util.RecyclerViewDecoration;
 import com.google.android.material.tabs.TabLayout;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.PlaylistItemListResponse;
+import com.google.api.services.youtube.model.PlaylistItemSnippet;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -34,40 +33,40 @@ public class MainActivity extends AppCompatActivity {
     private static final int HOME = 0;
     private static final int SEARCH = 1;
     private static final int LIBRARY = 2;
-    private static final int SONG = 3;
-    private static final int SETTING = 4;
-    private TabLayout tabLayout;
+    private static final int SETTING = 3;
     private static final int SPAN_COUNT = 5; // 한 화면에 보이는 data 수
-    private final String latestSongUrlAddress = "https://www.music-flo.com/api/meta/v1/track/KPOP/new?page=1&size=100&timestamp=1581420059879";
-    private final String trotSongUrlAddress = "https://www.music-flo.com/api/display/v1/browser/chart/3554/track/list?size=100&timestamp=1609790664606";
-    private URL latestSongUrl = null;
-    private URL trotSongUrl = null;
     private ArrayList<SongItem> latestSongItemArrayList;
+    private ArrayList<SongItem> popularSongItemArrayList;
     private ArrayList<SongItem> trotSongItemArrayList;
     private RecyclerView latestSongRecyclerView;
     private RecyclerView popularSongRecyclerView;
     private RecyclerView trotSongRecyclerView;
-    protected SnapHelper snapHelper;
+
+    private YouTube youTubeDataApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tabLayout = findViewById(R.id.mainTabLayout);
+
         latestSongItemArrayList = new ArrayList<>(); // 최신가요를 담을 list
+        popularSongItemArrayList = new ArrayList<>(); // 인기가요를 담을 list
         trotSongItemArrayList = new ArrayList<>(); // 트로트를 담을 list
-        try {
-            latestSongUrl = new URL(latestSongUrlAddress); //최신가요 받기위한  url
-            trotSongUrl = new URL(trotSongUrlAddress); // 트로트 목록을 받기위한 url
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+
+        TabLayout tabLayout = findViewById(R.id.mainTabLayout);
         latestSongRecyclerView = findViewById(R.id.latestSongList);
         popularSongRecyclerView = findViewById(R.id.popularMusicList);
         trotSongRecyclerView = findViewById(R.id.trotMusicList);
-        GetDataTask getDataTask = new GetDataTask(getApplicationContext()); //url api를 통해 데이터를 받을 쓰레드 생성
-        getDataTask.execute(latestSongUrl, trotSongUrl);//데이터를 받는 쓰레드 백그라운드 실행
 
+        GsonFactory gsonFactory = new GsonFactory(); // youtube api build 하기위한 gsonFactory
+        HttpTransport httpTransport = AndroidHttp.newCompatibleTransport(); // youtube api build 하기위한 httpTransport
+
+        youTubeDataApi = new YouTube.Builder(httpTransport, gsonFactory, null)
+                .setApplicationName(getResources().getString(R.string.app_name))
+                .build();
+
+        YoutubeAsyncTask youtubeAsyncTask = new YoutubeAsyncTask(this); //youtube api를 통해 데이터를 받는 쓰레드 생성
+        youtubeAsyncTask.execute(Config.TROT_SONG_ID, Config.LATEST_SONG_ID, Config.POPULAR_SONG_ID); //쓰레드 백그라운드 실행, 데이터를 받기위해 재생목록 아이디를 전달
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() { // tab item 클릭 리스너 설정
             @Override
@@ -78,9 +77,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case LIBRARY: // 보관함 Tab을 선택 했을때 보관함 activity로 화면 전환
                         startActivity(new Intent(MainActivity.this, LibraryActivity.class));
-                        break;
-                    case SONG: // 노래 tab을 선택 했을때 노래 activity로 화면 전환
-                        startActivity(new Intent(MainActivity.this, SongActivity.class));
                         break;
                     case SETTING: // setting tab을 선택 했을때 노래 activity로 화면 전환
                         startActivity(new Intent(MainActivity.this, SettingActivity.class));
@@ -127,92 +123,57 @@ public class MainActivity extends AppCompatActivity {
 
 
     //api로부터 백그라운드에서 data를 받는 asyncTask Thread
-    public class GetDataTask extends AsyncTask<URL, Void, String> {
-        HttpURLConnection urlConnection = null;
-        String result;
+    public class YoutubeAsyncTask extends AsyncTask<String, Void, Void> {
         Context context;
 
-        public GetDataTask(Context context) {
+        public YoutubeAsyncTask(Context context) {
             this.context = context;
         }
 
         @Override
-        protected String doInBackground(URL... urls) {
-            for (int i = 0; i < urls.length; ++i) { //들어온 url 전부에게 data를 받을수 있도록 반복문으로 구현
+        protected Void doInBackground(String... configs) {
+            for (String config : configs) { //매개변수로 playlist 받은 수 만큼 데이터 받기 위해 반복문 실행
+                PlaylistItemListResponse playlistItems = null;
                 try {
-                    urlConnection = (HttpURLConnection) urls[i].openConnection();//api url 접속
-                    urlConnection.setRequestMethod("GET");//HTTP 프로토콜 GET 으로 설정
-                    urlConnection.connect(); // 연결
-                    int responseStateCode = urlConnection.getResponseCode(); //접속이 잘되었는지 코드 반환
-                    InputStream inputStream;
-                    if (responseStateCode == HttpURLConnection.HTTP_OK) {//접속이 잘되었다면
-                        inputStream = urlConnection.getInputStream();//접속된 url의 inputStream을 얻어옴
-                    } else {
-                        inputStream = urlConnection.getErrorStream();
-                    }
-
-                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while ((line = bufferedReader.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    bufferedReader.close();
-                    urlConnection.disconnect();
-                    result = sb.toString();
-                } catch (Exception e) {
-                    result = e.toString();
-                }
-
-                JSONObject jsonObj = null;
-                JSONArray jsonArray = null;
-                boolean isLatestSong = urls[i].getPath().equals("/api/meta/v1/track/KPOP/new"); // 현재 url이 최신가요인지 트로트인지 구분하는 flag
-                String list = isLatestSong ? "list" : "trackList"; //jsonObject가 트로트 리스트는 tracklist, 최신가요는 list로 구성되어있으므로 url에 따라 구분
-                try {
-                    jsonObj = new JSONObject(result);
-                    jsonObj = new JSONObject(jsonObj.getString("data"));
-                    jsonArray = (JSONArray) jsonObj.get(list);
-                    for (int j = 0; j < jsonArray.length(); ++j) {
-                        SongItem songItem = new SongItem();
-                        JSONObject parseJsonObject = ((JSONObject) jsonArray.get(j));
-                        songItem.setTitle((String) parseJsonObject.get("name"));// 곡 이름 json parsing
-
-                        JSONArray parseJsonArray = parseJsonObject.getJSONArray("artistList"); // artistList array 얻어온 후
-                        JSONObject artistJsonObject = (JSONObject) parseJsonArray.get(0); // artistList는 1개의 요소밖에 없으므로 index 0를 사용한다.
-                        songItem.setArtist((String) artistJsonObject.get("name"));// list의 가수 이름 parsing
-
-                        parseJsonObject = (JSONObject) parseJsonObject.get("album");
-                        parseJsonArray = parseJsonObject.getJSONArray("imgList"); //imgList array 얻어온 후
-                        parseJsonObject = (JSONObject) parseJsonArray.get(1); // 첫번째 요소에 접근
-                        songItem.setImage((String) parseJsonObject.get("url")); // 이미지 url parsing
-
-                        if (isLatestSong) { // 최신가요면 최신가요 리스트에 추가 / 트로트면 트로트 리스트에 추가
-                            latestSongItemArrayList.add(songItem);
-                        } else {
-                            trotSongItemArrayList.add(songItem);
-                        }
-
-                    }
-                } catch (JSONException e) {
+                    playlistItems = youTubeDataApi.playlistItems()
+                            .list(Config.PART) // 많은 정보를 받기 위해 snippet으로 설정
+                            .setPlaylistId(config) // 재생목록 아이디 지정
+                            .setMaxResults((long) 20) // 최대 받을 아이템 갯수 지정
+                            .setKey(Config.API_KEY) // api key setting
+                            .execute();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                if (playlistItems == null) { // api로부터 데이터를 받지 못했다면 null 반환
+                    return null;
+                }
+
+                for (PlaylistItem playlistItem : playlistItems.getItems()) {
+                    SongItem songItem = createSongItemBySnippet(playlistItem.getSnippet());
+                    if (config.equals(Config.LATEST_SONG_ID)) { //재생목록이 최신가요 목록이라면
+                        latestSongItemArrayList.add(songItem); //최신가요 리스트에 추가
+                    } else if (config.equals(Config.TROT_SONG_ID)) { // 재생목록이 트로트 목록이라면
+                        trotSongItemArrayList.add(songItem); //트롯 가요 리스트에 추가
+                    } else if (config.equals(Config.POPULAR_SONG_ID)) { // 재생목록이 인기가요 목록이라면
+                        popularSongItemArrayList.add(songItem); // 인기가요 리스트에 추가
+                    }
+
+                }
             }
-            return result;
+            return null;
         }
 
+
         @Override
-        protected void onPostExecute(String s) { // 백그라운드 작업이 끝나면 불리는 메소드 / UI Thread
-            super.onPostExecute(s);
+        protected void onPostExecute(Void aVoid) { // 백그라운드 작업이 끝나면 불리는 메소드 / UI Thread
+            super.onPostExecute(aVoid);
             //최신가요 list Adapter생성
             SongItemAdapter latestSongAdapter = new SongItemAdapter(latestSongItemArrayList, context, SongItemAdapter.ItemType.LATEST_SONG_ITEM);
 
-            //<지워질 코드> 인기가요와 최신가요가 안겹치게 하기위해서 같은곡 리스트지만 reverse하여 인기곡 리스트로 설정
-            ArrayList<SongItem> popularSongItemArrayList = (ArrayList<SongItem>) latestSongItemArrayList.clone();
-            Collections.reverse(popularSongItemArrayList);
             //인기가요  list Adapter 생성
             SongItemAdapter popularSongAdapter = new SongItemAdapter(popularSongItemArrayList, context, SongItemAdapter.ItemType.POPULAR_SONG_ITEM);
+
             //트로트 list Adapter 생성
             SongItemAdapter trotSongAdapter = new SongItemAdapter(trotSongItemArrayList, context, SongItemAdapter.ItemType.POPULAR_SONG_ITEM);
 
@@ -229,14 +190,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void setRecyclerViewLayoutManager() {
+    private void setRecyclerViewLayoutManager() {
         int scrollPosition = 0;
         //최신가요 recyclerView는 gridLayout으로 설정
         RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), SPAN_COUNT, GridLayoutManager.HORIZONTAL, false);
         latestSongRecyclerView.setLayoutManager(gridLayoutManager);
         latestSongRecyclerView.scrollToPosition(scrollPosition);
+
         //한 페이지씩 넘어 갈수 있도록 recyclerView에 snapHelper를 붙여줌
-        snapHelper = new PagerSnapWithSpanCountHelper(SPAN_COUNT);
+        SnapHelper snapHelper = new PagerSnapWithSpanCountHelper(SPAN_COUNT);
         snapHelper.attachToRecyclerView(latestSongRecyclerView);
 
         //인기가요/트로트 recyclerView는 한줄 씩 보여야 하므로 linearLayout으로 설정
@@ -244,5 +206,33 @@ public class MainActivity extends AppCompatActivity {
         popularSongRecyclerView.setLayoutManager(popularLinearLayoutManger);
         RecyclerView.LayoutManager trotLinearLayoutManger = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         trotSongRecyclerView.setLayoutManager(trotLinearLayoutManger);
+    }
+
+    //youtube playlistItem의 snippet으로부터 songItem을 만드는 메소드
+    private SongItem createSongItemBySnippet(PlaylistItemSnippet snippet) {
+        SongItem songItem = new SongItem();
+        String description = snippet.getDescription(); //snippet으로부터 아이템의 description을 얻어옴
+        description = description.replace(" ", ""); //description으로부터 제목,가수에 대한 정보를 parsing하기 위하여 공백제거
+        description = description.replace("\n", "");//description으로부터 제목,가수에 대한 정보를 parsing하기 위하여 \n제거
+
+        //'제목' 값을 얻기 위한 문자열 parsing
+        String target = "제목";
+        int targetNum = description.indexOf(target);
+        String title = description.substring(targetNum + 3, (description.substring(targetNum).indexOf("가수") + targetNum)); //
+        songItem.setTitle(title);
+
+        //'가수' 값을 얻기 위한 문자열 parsing
+        target = "가수";
+        targetNum = description.indexOf(target);
+        String artist = description.substring(targetNum + 3, (description.substring(targetNum).indexOf("작사") + targetNum));
+        songItem.setArtist(artist);
+
+        //이미지 url
+        songItem.setImage(snippet.getThumbnails().getDefault().getUrl());
+
+        //video url
+        songItem.setVideoID(snippet.getResourceId().getVideoId());
+
+        return songItem;
     }
 }
