@@ -4,6 +4,7 @@ public class SongItem {
     private String image; //image 주소
     private String artist; // 가수 이름
     private String title;  // 노래 제목
+    private String videoID; //비디오 재생시 필요한 ID
 
 
     public SongItem(String image, String title, String artist) {
@@ -37,5 +38,13 @@ public class SongItem {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getVideoID() {
+        return videoID;
+    }
+
+    public void setVideoID(String videoID) {
+        this.videoID = videoID;
     }
 }

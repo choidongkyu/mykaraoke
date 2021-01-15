@@ -6,7 +6,10 @@ import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -32,12 +35,21 @@ public class RecordThread extends Thread {
                         .build())
                 .setBufferSizeInBytes(bufferSize)
                 .build();
+
     }
 
     @Override
     public void run() {
         isRecording = true;
         audioRecord.startRecording(); // 녹음 시작
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, "녹음을 시작합니다", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         byte[] readData = new byte[bufferSize];
         String fileName = "record.pcm";
         FileOutputStream fos = null;
@@ -54,6 +66,12 @@ public class RecordThread extends Thread {
                 e.printStackTrace();
             }
         }
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, "녹음을 종료합니다", Toast.LENGTH_SHORT).show();
+            }
+        });
         audioRecord.stop();
         audioRecord.release();
         audioRecord = null;

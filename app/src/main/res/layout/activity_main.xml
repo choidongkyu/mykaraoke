@@ -121,12 +121,6 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@drawable/ic_mic"
-            android:text="노래" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:icon="@drawable/ic_baseline_settings_24"
             android:text="설정" />
     </com.google.android.material.tabs.TabLayout>

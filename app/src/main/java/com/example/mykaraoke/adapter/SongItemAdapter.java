@@ -1,6 +1,7 @@
 package com.example.mykaraoke.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.mykaraoke.MainActivity;
 import com.example.mykaraoke.R;
+import com.example.mykaraoke.SearchActivity;
+import com.example.mykaraoke.SongActivity;
+import com.example.mykaraoke.util.Config;
 
 import java.util.ArrayList;
 
@@ -69,7 +73,6 @@ public class SongItemAdapter extends RecyclerView.Adapter<SongItemAdapter.ViewHo
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private LinearLayout itemPanel;
         private ImageView imageView;
         private TextView txtArtist;
         private TextView txtTitle;
@@ -88,7 +91,9 @@ public class SongItemAdapter extends RecyclerView.Adapter<SongItemAdapter.ViewHo
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent intent = new Intent(context, SongActivity.class);
+                    intent.putExtra(Config.VIDEO_ID, songItemArrayList.get(getAdapterPosition()).getVideoID()); // 노래 activity에 재생할 video id전달
+                    context.startActivity(intent);
                 }
             });
         }
