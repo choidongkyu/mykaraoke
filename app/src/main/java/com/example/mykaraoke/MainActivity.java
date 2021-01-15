@@ -10,18 +10,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.mykaraoke.adapter.SongItem;
 import com.example.mykaraoke.adapter.SongItemAdapter;
 import com.example.mykaraoke.util.PagerSnapWithSpanCountHelper;
 import com.example.mykaraoke.util.RecyclerViewDecoration;
 import com.google.android.material.tabs.TabLayout;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.PlaylistItemListResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -47,7 +54,9 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView latestSongRecyclerView;
     private RecyclerView popularSongRecyclerView;
     private RecyclerView trotSongRecyclerView;
-    protected SnapHelper snapHelper;
+    private SnapHelper snapHelper;
+
+    private YouTube youTubeDataApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +106,14 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+
+        GsonFactory gsonFactory = new GsonFactory(); // youtube api build 하기위한 gsonFactory
+        HttpTransport httpTransport = AndroidHttp.newCompatibleTransport(); // youtube api build 하기위한 httpTransport
+
+        youTubeDataApi = new YouTube.Builder(httpTransport, gsonFactory, null)
+                .setApplicationName(getResources().getString(R.string.app_name))
+                .build();
+
     }
 
 
@@ -199,6 +216,24 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+            PlaylistItemListResponse playlistItems = null;
+            try {
+                playlistItems = youTubeDataApi.playlistItems()
+                        .list("snippet")
+                        .setPlaylistId("PLt1UQ3o9-dDDLr8cn5cCxGOjqbdbMJ8oH")
+                        .setMaxResults((long) 20)
+                        .setKey("AIzaSyDyYNe8iFLOG2ZApQt9e4OiNgcF-bnzXRU")
+                        .execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (playlistItems != null) {
+                Log.d("dkchoi", playlistItems.getItems().size()+"");
+            }else {
+                Log.d("dkchoi", "fail");
+            }
+
             return result;
         }
 
