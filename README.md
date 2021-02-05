@@ -4,7 +4,7 @@
 
 ### 1. Initial screen
 
-![Screenshot_20210206-000834_MyKaraoke](https://user-images.githubusercontent.com/39241588/107059681-6dc48980-6819-11eb-83ea-fb4ca563b5af.jpg){: width="50%" height="50%"){: .center}
+<img src="https://user-images.githubusercontent.com/39241588/107059681-6dc48980-6819-11eb-83ea-fb4ca563b5af.jpg" width="100" height="100">
 
 ### 2. Added screen
 
