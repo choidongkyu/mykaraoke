@@ -82,8 +82,6 @@ public class RecordThread extends Thread {
 
         try {
             //pcm data를 콘텐트프로바이더를 통한 파일 공유를 위하여 wav파일로 변환
-            //Log.d("dkchoi", context.getExternalFilesDir(wavFileName)+"");
-            Log.d("dkchoi", Environment.getExternalStorageDirectory().getAbsolutePath() + pcmFileName);
             rawToWave(new File(context.getFilesDir() + "/" + pcmFileName), new File(context.getFilesDir() + "/" + wavFileName));
 
         } catch (IOException e) {

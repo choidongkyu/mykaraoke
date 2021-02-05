@@ -162,6 +162,9 @@ public class MainActivity extends AppCompatActivity {
 
                 for (PlaylistItem playlistItem : playlistItems.getItems()) {
                     SongItem songItem = createSongItemBySnippet(playlistItem.getSnippet());
+                    if(songItem == null) {//songItem이 null인 경우 private 아이템이므로 항목에 추가하지 않음.
+                        continue;
+                    }
                     if (config.equals(Config.LATEST_SONG_ID)) { //재생목록이 최신가요 목록이라면
                         latestSongItemArrayList.add(songItem); //최신가요 리스트에 추가
                     } else if (config.equals(Config.TROT_SONG_ID)) { // 재생목록이 트로트 목록이라면
@@ -229,7 +232,10 @@ public class MainActivity extends AppCompatActivity {
         //'제목' 값을 얻기 위한 문자열 parsing
         String target = "제목";
         int targetNum = description.indexOf(target);
-        String title = description.substring(targetNum + 3, (description.substring(targetNum).indexOf("가수") + targetNum)); //
+        if(targetNum == -1) { //targetNum이 -1인 경우는 private항목 이므로 아이템으로 만들수 없음 그러므로 null 리턴
+            return null;
+        }
+        String title = description.substring(targetNum + 3, (description.substring(targetNum).indexOf("가수") + targetNum));
         songItem.setTitle(title);
 
         //'가수' 값을 얻기 위한 문자열 parsing

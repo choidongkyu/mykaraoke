@@ -123,7 +123,6 @@ public class JsonUtil {
         JSONArray jsonArray = new JSONArray(jsonData);
         JSONObject jsonObject = songItemToJsonObject(songItem); //songItem을 JsonObject로 변환
         int index = getIndexFromJsonArray(jsonObject, jsonArray);//해당 아이템의 인덱스를 반환
-        Log.d("dkchoi", "index = " + index);
         jsonObject = (JSONObject) jsonArray.get(index); //해당 인덱스의 jsonObject를 얻어옴
         jsonObject.put("title", title);//변경하고자 하는 title로 수정
         editor.putString(Config.BOOKMARKS_KEY, jsonArray.toString());
