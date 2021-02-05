@@ -6,5 +6,12 @@ public class Config {
     public static String LATEST_SONG_ID = "PLt1UQ3o9-dDDLr8cn5cCxGOjqbdbMJ8oH";
     public static String TROT_SONG_ID = "PLt1UQ3o9-dDAKsc62-7IkYLPgnnis-Ysg";
     public static String PART = "snippet";
-    public static String VIDEO_ID = "videoID";
+    public static String SONG_ITEM = "videoID";
+
+    public static String AUTO_RECORD_SETTING = "auto_record_setting";
+    public static String AUTO_VOLUME_SETTING = "auto_volume_setting";
+    public static String AUTO_PUSH_SETTING = "auto_push_setting";
+    public static String AUTO_WAVEFORM_SETTING = "auto_waveform_setting";
+    public static String SETTINGS_KEY = "settings_key";
+    public static String BOOKMARKS_KEY = "bookmarks_key";
 }

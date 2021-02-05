@@ -2,26 +2,23 @@ package com.example.mykaraoke.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.mykaraoke.MainActivity;
 import com.example.mykaraoke.R;
-import com.example.mykaraoke.SearchActivity;
 import com.example.mykaraoke.SongActivity;
-import com.example.mykaraoke.util.Config;
 
 import java.util.ArrayList;
 
+
+//노래 목록 Adapter
 public class SongItemAdapter extends RecyclerView.Adapter<SongItemAdapter.ViewHolder> {
 
     public enum ItemType { // 최신가요 list에 들어가는 item과, 인기가요 list에 들어가는 item layout이 다르므로 enumType으로 구분
@@ -44,9 +41,9 @@ public class SongItemAdapter extends RecyclerView.Adapter<SongItemAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v;
-        if(itemType == ItemType.LATEST_SONG_ITEM) {// 최신가요에 들어가는 item과 인기가요에 들어가는 item의 layout이 다르므로 itemType으로 구분
+        if (itemType == ItemType.LATEST_SONG_ITEM) {// 최신가요에 들어가는 item과 인기가요에 들어가는 item의 layout이 다르므로 itemType으로 구분
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.latest_list_item, parent, false);//custom한 list의 아이템 layout inflate
-        }else {
+        } else {
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.popular_list_item, parent, false);
         }
 
@@ -76,13 +73,14 @@ public class SongItemAdapter extends RecyclerView.Adapter<SongItemAdapter.ViewHo
         private ImageView imageView;
         private TextView txtArtist;
         private TextView txtTitle;
+
         public ViewHolder(View v) {
             super(v);
-            if(itemType == ItemType.LATEST_SONG_ITEM) { //최신가요 리스트에 들어갈 item인지 인기가요에 들어갈 item인지 구분하여 resource 구분
+            if (itemType == ItemType.LATEST_SONG_ITEM) { //최신가요 리스트에 들어갈 item인지 인기가요에 들어갈 item인지 구분하여 resource 구분
                 imageView = v.findViewById(R.id.latest_image);
                 txtArtist = v.findViewById(R.id.latest_txtArtist);
                 txtTitle = v.findViewById(R.id.latest_txtTitle);
-            }else{
+            } else {
                 imageView = v.findViewById(R.id.popular_image);
                 txtArtist = v.findViewById(R.id.popular_txtArtist);
                 txtTitle = v.findViewById(R.id.popular_txtTitle);
@@ -92,7 +90,8 @@ public class SongItemAdapter extends RecyclerView.Adapter<SongItemAdapter.ViewHo
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, SongActivity.class);
-                    intent.putExtra(Config.VIDEO_ID, songItemArrayList.get(getAdapterPosition()).getVideoID()); // 노래 activity에 재생할 video id전달
+                    SongItem songItem = songItemArrayList.get(getAdapterPosition());
+                    intent.putExtra("songItem", songItem);
                     context.startActivity(intent);
                 }
             });

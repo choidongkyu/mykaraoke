@@ -1,20 +1,24 @@
 package com.example.mykaraoke.adapter;
 
-public class SongItem {
+import java.io.Serializable;
+
+public class SongItem implements Serializable {
     private String image; //image 주소
     private String artist; // 가수 이름
     private String title;  // 노래 제목
     private String videoID; //비디오 재생시 필요한 ID
 
 
-    public SongItem(String image, String title, String artist) {
-        this.image = image;
-        this.artist = artist;
-        this.title = title;
+    public SongItem(SongItem other) {
+        this.image = other.image;
+        this.artist = other.artist;
+        this.title = other.title;
     }
+
 
     public SongItem() {
     }
+
 
     public String getImage() {
         return image;

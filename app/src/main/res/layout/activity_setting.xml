@@ -1,9 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingActivity">
+    tools:context=".SettingActivity"
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/autoRecordTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="자동 녹음"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/autoRecordSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="자동으로 노래가 녹음이 되도록 설정합니다."
+                android:layout_below="@id/autoRecordTitle"
+                android:textSize="15sp"
+                android:textColor="#92FFFFFF"/>
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/autoRecord"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_centerInParent="true"
+        android:background="#92FFFFFF"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/autoVolumeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="볼륨 최대치"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/autoVolumeSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="자동으로 볼륨이 최대가 되도록 설정합니다."
+                android:layout_below="@id/autoVolumeTitle"
+                android:textSize="15sp"
+                android:textColor="#92FFFFFF"/>
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/autoVolume"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_centerInParent="true"
+        android:background="#92FFFFFF"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/autoPushTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="푸쉬 알림"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/autoPushSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="푸쉬 알림을 받을지 설정합니다."
+                android:layout_below="@id/autoPushTitle"
+                android:textSize="15sp"
+                android:textColor="#92FFFFFF"/>
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/autoPush"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_centerInParent="true"
+        android:background="#92FFFFFF"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/waveFormTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="wave form 비활성화"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/waveFormSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="오디오 파형을 활성화 할지 설정합니다.."
+                android:layout_below="@id/waveFormTitle"
+                android:textSize="15sp"
+                android:textColor="#92FFFFFF"/>
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/waveForm"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_centerInParent="true"
+        android:background="#92FFFFFF"/>
+
+</LinearLayout>

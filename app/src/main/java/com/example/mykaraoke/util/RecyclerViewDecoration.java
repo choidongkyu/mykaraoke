@@ -22,6 +22,7 @@ public class RecyclerViewDecoration extends RecyclerView.ItemDecoration { //ë¦¬ì
         super.getItemOffsets(outRect, view, parent, state);
         outRect.right = divWidth;
         outRect.left = divWidth;
+        outRect.bottom = divWidth;
     }
 }
 

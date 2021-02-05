@@ -10,6 +10,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/*
+    pcm data에 접근하여 음성을 재생 해주는 thread
+ */
 public class PlayThread extends Thread {
     private boolean isPlaying = false;
     private final int sampleRate = 16000;
@@ -18,19 +21,24 @@ public class PlayThread extends Thread {
     private final int bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelCount, audioFormat);
     private AudioTrack audioTrack;
     private final Context context;
+    private String fileName;
+
+    public PlayThread(Context context, String fileName) {
+        this.context = context;
+        this.fileName = fileName;
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, channelCount, audioFormat, bufferSize, AudioTrack.MODE_STREAM); // AudioTrack 생성
+    }
 
     public PlayThread(Context context) {
         this.context = context;
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, channelCount, audioFormat, bufferSize, AudioTrack.MODE_STREAM); // AudioTrack 생성
     }
-
     @Override
     public void run() {
         isPlaying = true;
         audioTrack.play();  // write 하기 전에 play 를 먼저 수행해 주어야 함
         byte[] writeData = new byte[bufferSize];
         FileInputStream fis = null;
-        String fileName = "record.pcm";
         try {
             fis = context.openFileInput(fileName);//내부저장소에 record.pcm 파일에 접근
         }catch (FileNotFoundException e) {

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <SwitchPreference
-        android:key="autoRecord"
-        android:title="자동녹음"
-        android:summary="자동으로 노래가 녹음이 되도록 설정합니다"
-        android:defaultValue="false"/>
-</PreferenceScreen>

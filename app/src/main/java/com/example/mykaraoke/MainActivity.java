@@ -1,15 +1,19 @@
 package com.example.mykaraoke;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.mykaraoke.adapter.SongItem;
 import com.example.mykaraoke.adapter.SongItemAdapter;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int LIBRARY = 2;
     private static final int SETTING = 3;
     private static final int SPAN_COUNT = 5; // 한 화면에 보이는 data 수
+    private final String[] permissions = {Manifest.permission.RECORD_AUDIO};
     private ArrayList<SongItem> latestSongItemArrayList;
     private ArrayList<SongItem> popularSongItemArrayList;
     private ArrayList<SongItem> trotSongItemArrayList;
@@ -58,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
         latestSongRecyclerView = findViewById(R.id.latestSongList);
         popularSongRecyclerView = findViewById(R.id.popularMusicList);
         trotSongRecyclerView = findViewById(R.id.trotMusicList);
+
+        if(!hasPermissions(permissions)){ //녹음시 필요한 권한이 없다면 권한요청
+            ActivityCompat.requestPermissions(this, permissions, 1);
+        }
 
         GsonFactory gsonFactory = new GsonFactory(); // youtube api build 하기위한 gsonFactory
         HttpTransport httpTransport = AndroidHttp.newCompatibleTransport(); // youtube api build 하기위한 httpTransport
@@ -162,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-
             return null;
 
         }
@@ -237,5 +245,17 @@ public class MainActivity extends AppCompatActivity {
         songItem.setVideoID(snippet.getResourceId().getVideoId());
 
         return songItem;
+    }
+
+    // 해당 기능의 권한이 있는지 확인할 수 있는 메소드
+    private boolean hasPermissions(String... permissions) {
+        if (permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
