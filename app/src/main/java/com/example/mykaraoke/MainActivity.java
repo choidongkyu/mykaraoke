@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         popularSongRecyclerView = findViewById(R.id.popularMusicList);
         trotSongRecyclerView = findViewById(R.id.trotMusicList);
 
-        if(!hasPermissions(permissions)){ //녹음시 필요한 권한이 없다면 권한요청
+        if (!hasPermissions(permissions)) { //녹음시 필요한 권한이 없다면 권한요청
             ActivityCompat.requestPermissions(this, permissions, 1);
         }
 
@@ -162,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
                 for (PlaylistItem playlistItem : playlistItems.getItems()) {
                     SongItem songItem = createSongItemBySnippet(playlistItem.getSnippet());
-                    if(songItem == null) {//songItem이 null인 경우 private 아이템이므로 항목에 추가하지 않음.
+                    if (songItem == null) { // songItem이 null인 경우 private 아이템이므로 항목에 추가하지 않음.
                         continue;
                     }
                     if (config.equals(Config.LATEST_SONG_ID)) { //재생목록이 최신가요 목록이라면
@@ -232,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
         //'제목' 값을 얻기 위한 문자열 parsing
         String target = "제목";
         int targetNum = description.indexOf(target);
-        if(targetNum == -1) { //targetNum이 -1인 경우는 private항목 이므로 아이템으로 만들수 없음 그러므로 null 리턴
+        if (targetNum == -1) { //targetNum이 -1인 경우는 private항목 이므로 아이템으로 만들수 없음 그러므로 null 리턴
             return null;
         }
         String title = description.substring(targetNum + 3, (description.substring(targetNum).indexOf("가수") + targetNum));

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.os.Environment;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,6 +35,7 @@ public class PlayThread extends Thread {
         this.context = context;
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, channelCount, audioFormat, bufferSize, AudioTrack.MODE_STREAM); // AudioTrack 생성
     }
+
     @Override
     public void run() {
         isPlaying = true;
@@ -40,21 +43,21 @@ public class PlayThread extends Thread {
         byte[] writeData = new byte[bufferSize];
         FileInputStream fis = null;
         try {
-            fis = context.openFileInput(fileName);//내부저장소에 record.pcm 파일에 접근
-        }catch (FileNotFoundException e) {
+            fis = new FileInputStream(new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), fileName)); //외부저장소에 record.pcm 파일에 접근
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
         DataInputStream dis = new DataInputStream(fis);
-        while(isPlaying) {
+        while (isPlaying) {
             try {
                 int ret = dis.read(writeData, 0, bufferSize);
-                if(ret <= 0) {
+                if (ret <= 0) {
                     isPlaying = false;
                     break;
                 }
                 audioTrack.write(writeData, 0, ret); // AudioTrack 에 write 를 하면 스피커로 송출됨
-            }catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -66,7 +69,7 @@ public class PlayThread extends Thread {
         try {
             dis.close();
             fis.close();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

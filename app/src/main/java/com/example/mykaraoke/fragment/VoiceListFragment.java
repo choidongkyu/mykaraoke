@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,10 +65,11 @@ public class VoiceListFragment extends Fragment implements LibraryActivity.IBack
         voiceList = new ArrayList<>(); // 파일리스트를 배열에서 list 형태로 변경(추가,제거 용이하기 위하여)
         wavFileList = new ArrayList<>(); // wav 파일을 관리용 리스트
 
-        String[] files = context.fileList(); // 음성녹음 파일 리스트 get
-        for(String file : files) {
+        File externalFiles = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+        String[] files = externalFiles.list(); // 음성녹음 파일 리스트 get
+        for (String file : files) {
             //녹음이 종료되면 wav파일과 pcm파일 2개가 나오게 되는데 녹음을 재생할시에는 pcm파일만 필요하므로 wav파일은 리스트에 담지 않음
-            if(file.contains(".wav")) {
+            if (file.contains(".wav")) {
                 continue;
             }
             voiceList.add(file);
@@ -110,12 +112,12 @@ public class VoiceListFragment extends Fragment implements LibraryActivity.IBack
             public void onClick(View view) {
                 String pcmFileName = voiceList.get(voiceItemAdapter.getSelectPosition());
                 String wavFileName = pcmFileName.replace(".pcm", ".wav");
-                File pcmFile = new File(context.getFilesDir(), pcmFileName); //내부 저장소 pcm파일에 접근
+                File pcmFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), pcmFileName); //외부 저장소 pcm파일에 접근
                 if (pcmFile.exists()) { //파일이 존재한다면 파일 삭제
                     pcmFile.delete();
                 }
-                File wavFile = new File(context.getFilesDir(), wavFileName);//wav파일도 마찬가지로 삭제
-                if(wavFile.exists()) {
+                File wavFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), wavFileName);//wav파일도 마찬가지로 삭제
+                if (wavFile.exists()) {
                     wavFile.delete();
                 }
                 voiceList.remove(voiceList.get(voiceItemAdapter.getSelectPosition())); //data 삭제
@@ -129,9 +131,11 @@ public class VoiceListFragment extends Fragment implements LibraryActivity.IBack
             public void onClick(View view) {
                 //콘텐트 프로바이더는 pcm파일을 공유할 수 없으므로 이름을 wav로 변경
                 String fileName = voiceList.get(voiceItemAdapter.getSelectPosition()).replace(".pcm", ".wav");
-                File file = new File(context.getFilesDir(), fileName); //내부 저장소 파일에 접근
+                File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), fileName); //외부 저장소 파일에 접근
+
                 Intent intent = new Intent(Intent.ACTION_SEND); //공유 데이터를 담을 인텐트 생성
-                Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
+                Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
                 intent.setDataAndType(uri, "audio/*");
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
@@ -169,10 +173,10 @@ public class VoiceListFragment extends Fragment implements LibraryActivity.IBack
             public void onClick(DialogInterface dialogInterface, int i) {
                 String pcmFileName = voiceList.get(voiceItemAdapter.getSelectPosition());
                 String wavFileName = pcmFileName.replace(".pcm", ".wav");
-                File wavFile = new File(context.getFilesDir(), wavFileName); // 내부 저장소 wav 파일에 접근
-                File pcmFile = new File(context.getFilesDir(), pcmFileName); // 내부 저장소 pcm 파일에 접근
-                pcmFile.renameTo(new File(context.getFilesDir(), input.getText() + ".pcm"));//파일명을 입력된 text로 수정
-                wavFile.renameTo(new File(context.getFilesDir(), input.getText() + ".wav"));//wav파일도 마찬가지로 이름 수정
+                File wavFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), wavFileName); // 내부 저장소 wav 파일에 접근
+                File pcmFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), pcmFileName); // 내부 저장소 pcm 파일에 접근
+                pcmFile.renameTo(new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), input.getText() + ".pcm"));//파일명을 입력된 text로 수정
+                wavFile.renameTo(new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), input.getText() + ".wav"));//wav파일도 마찬가지로 이름 수정
                 voiceList.set(position, input.getText() + ".pcm");//data를 입력된 text로 수정
                 bottomSheetDialog.dismiss(); //다이어로그 닫기
                 voiceItemAdapter.notifyDataSetChanged();

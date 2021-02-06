@@ -53,13 +53,13 @@ public class RecordThread extends Thread {
         audioRecord.startRecording(); // 녹음 시작
 
         byte[] readData = new byte[bufferSize];
-        String pcmFileName = "음성" + context.getApplicationContext().fileList().length / 2 + ".pcm"; // 음성0.pcm, 음성1.pcm ... 식으로 저장
-        String wavFileName = "음성" + context.getApplicationContext().fileList().length / 2 + ".wav";
+        int size;
+        size = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC).list().length; // 파일 뒤에 붙는 숫자를 사이즈로 지정
+        String pcmFileName = "음성" + size / 2 + ".pcm"; // 음성0.pcm, 음성1.pcm ... 식으로 저장, wav pcm 두개의 파일이 저장되므로 2를 나눠줌
+        String wavFileName = "음성" + size / 2 + ".wav";
         FileOutputStream fos = null;
         try {
-            fos = context.openFileOutput(pcmFileName, Context.MODE_PRIVATE); // 내부저장소에 파일 저장
-
-
+            fos = new FileOutputStream(new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC).toString(), pcmFileName)); // app의 music 외부저장소에 저장
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -82,7 +82,8 @@ public class RecordThread extends Thread {
 
         try {
             //pcm data를 콘텐트프로바이더를 통한 파일 공유를 위하여 wav파일로 변환
-            rawToWave(new File(context.getFilesDir() + "/" + pcmFileName), new File(context.getFilesDir() + "/" + wavFileName));
+            rawToWave(new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), pcmFileName),
+                    new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), wavFileName));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -113,6 +114,9 @@ public class RecordThread extends Thread {
 
         DataOutputStream output = null;
         try {
+            int channel = 2;
+            int bitDepth = 16;
+            int sampleRate = 16000;
             output = new DataOutputStream(new FileOutputStream(waveFile));
             // WAVE header
             // see http://ccrma.stanford.edu/courses/422/projects/WaveFormat/
@@ -122,11 +126,11 @@ public class RecordThread extends Thread {
             writeString(output, "fmt "); // subchunk 1 id
             writeInt(output, 16); // subchunk 1 size
             writeShort(output, (short) 1); // audio format (1 = PCM)
-            writeShort(output, (short) 1); // number of channels
-            writeInt(output, 16000); // sample rate
-            writeInt(output, 16000 * 2); // byte rate
-            writeShort(output, (short) 2); // block align
-            writeShort(output, (short) 16); // bits per sample
+            writeShort(output, (short) channel); // number of channels
+            writeInt(output, sampleRate); // sample rate
+            writeInt(output, sampleRate * channel * (bitDepth / 8)); // byte rate
+            writeShort(output, (short) (channel * (bitDepth / 8))); // block align
+            writeShort(output, (short) bitDepth); // bits per sample
             writeString(output, "data"); // subchunk 2 id
             writeInt(output, rawData.length); // subchunk 2 size
             // Audio data (conversion big endian -> little endian)
