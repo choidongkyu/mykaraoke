@@ -8,8 +8,15 @@ import android.media.MediaRecorder;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+
+import com.example.mykaraoke.R;
+import com.example.mykaraoke.SongActivity;
+import com.example.mykaraoke.WaveFormView;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -33,9 +40,12 @@ public class RecordThread extends Thread {
     private final int bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelCount, audioFormat);
     private AudioRecord audioRecord;
     private Context context;
+    private Handler handler;
+    private WaveFormView waveFormView;
 
     public RecordThread(Context context) {
         this.context = context;
+        waveFormView = ((SongActivity) context).findViewById(R.id.waveform_view);
         audioRecord = new AudioRecord.Builder()
                 .setAudioSource(MediaRecorder.AudioSource.MIC)
                 .setAudioFormat(new AudioFormat.Builder()
@@ -45,6 +55,14 @@ public class RecordThread extends Thread {
                         .build())
                 .setBufferSizeInBytes(bufferSize)
                 .build();
+
+        handler = new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                short[] readData = (short[]) msg.obj;
+                waveFormView.updateAudioData(readData);
+            }
+        };
     }
 
     @Override
@@ -52,7 +70,7 @@ public class RecordThread extends Thread {
         isRecording = true;
         audioRecord.startRecording(); // 녹음 시작
 
-        byte[] readData = new byte[bufferSize];
+        short[] readData = new short[bufferSize];
         int size;
         size = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC).list().length; // 파일 뒤에 붙는 숫자를 사이즈로 지정
         String pcmFileName = "음성" + size / 2 + ".pcm"; // 음성0.pcm, 음성1.pcm ... 식으로 저장, wav pcm 두개의 파일이 저장되므로 2를 나눠줌
@@ -65,8 +83,11 @@ public class RecordThread extends Thread {
         }
         while (isRecording) {
             int ret = audioRecord.read(readData, 0, bufferSize);  //  AudioRecord의 read 함수를 통해 pcm data 를 읽어옴
+            //데이터를 핸들러를 통해 처리
+            Message msg = handler.obtainMessage(0, readData);
+            handler.sendMessage(msg);
             try {
-                fos.write(readData, 0, bufferSize);    //  읽어온 readData 를 파일에 write 함
+                fos.write(shortArrayToByteArray(readData), 0, bufferSize);    //  읽어온 readData를 byteArray로 변환한 후 파일에 write 함
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -190,5 +211,16 @@ public class RecordThread extends Thread {
         for (int i = 0; i < value.length(); i++) {
             output.write(value.charAt(i));
         }
+    }
+
+    //shortArray를 ByteArray로 변환해주는 메소드
+    public byte[] shortArrayToByteArray(short[] shortArray) {
+        int shortArraySize = shortArray.length;
+        byte[] byteArray = new byte[shortArraySize * 2];
+        for (int i = 0; i < shortArraySize ; i++) {
+            byteArray [i * 2] = (byte) (shortArray[i] & 0x00FF);
+            byteArray [(i * 2) + 1] = (byte) (shortArray[i] >> 8);
+        }
+        return byteArray;
     }
 }

@@ -40,13 +40,13 @@ public class SongActivity extends AppCompatActivity {
     private RecordThread recordThread;
     private Toolbar toolbar;
     private SongItem songItem;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_song);
         toolbar = findViewById(R.id.toolbar);
+
         recordButton = findViewById(R.id.recordButton); //녹음 버튼
         recordThread = new RecordThread(this);
 

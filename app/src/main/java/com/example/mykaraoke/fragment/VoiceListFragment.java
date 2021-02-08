@@ -129,7 +129,7 @@ public class VoiceListFragment extends Fragment implements LibraryActivity.IBack
         sharedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //콘텐트 프로바이더는 pcm파일을 공유할 수 없으므로 이름을 wav로 변경
+                //콘텐트 프로바이더는 pcm파일을 재생할 수 없으므로 wav로 변경
                 String fileName = voiceList.get(voiceItemAdapter.getSelectPosition()).replace(".pcm", ".wav");
                 File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), fileName); //외부 저장소 파일에 접근
 

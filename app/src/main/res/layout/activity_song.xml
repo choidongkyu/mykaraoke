@@ -29,6 +29,12 @@
             android:background="#2F2F30"
             android:clickable="true">
         </View>
+
+        <com.example.mykaraoke.WaveFormView
+            android:id="@+id/waveform_view"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="380dp"/>
     </FrameLayout>
 
 
