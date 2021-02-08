@@ -56,7 +56,7 @@ public class RecordThread extends Thread {
                 .setBufferSizeInBytes(bufferSize)
                 .build();
 
-        handler = new Handler(Looper.getMainLooper()){
+        handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 short[] readData = (short[]) msg.obj;
@@ -86,8 +86,12 @@ public class RecordThread extends Thread {
             //데이터를 핸들러를 통해 처리
             Message msg = handler.obtainMessage(0, readData);
             handler.sendMessage(msg);
+            ByteBuffer byteBuffer = ByteBuffer.allocate(2 * bufferSize).order(ByteOrder.LITTLE_ENDIAN);
+            for (short data : readData) {
+                byteBuffer.putShort(data);
+            }
             try {
-                fos.write(shortArrayToByteArray(readData), 0, bufferSize);    //  읽어온 readData를 byteArray로 변환한 후 파일에 write 함
+                fos.write(byteBuffer.array());    //  읽어온 readData를 byteArray로 변환한 후 파일에 write 함
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -217,9 +221,9 @@ public class RecordThread extends Thread {
     public byte[] shortArrayToByteArray(short[] shortArray) {
         int shortArraySize = shortArray.length;
         byte[] byteArray = new byte[shortArraySize * 2];
-        for (int i = 0; i < shortArraySize ; i++) {
-            byteArray [i * 2] = (byte) (shortArray[i] & 0x00FF);
-            byteArray [(i * 2) + 1] = (byte) (shortArray[i] >> 8);
+        for (int i = 0; i < shortArraySize; i++) {
+            byteArray[i * 2] = (byte) (shortArray[i] & 0x00FF);
+            byteArray[(i * 2) + 1] = (byte) (shortArray[i] >> 8);
         }
         return byteArray;
     }
