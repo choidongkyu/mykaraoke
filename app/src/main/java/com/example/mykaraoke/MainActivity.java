@@ -19,6 +19,7 @@ import com.example.mykaraoke.adapter.SongItem;
 import com.example.mykaraoke.adapter.SongItemAdapter;
 import com.example.mykaraoke.util.Config;
 import com.example.mykaraoke.util.PagerSnapWithSpanCountHelper;
+import com.example.mykaraoke.util.Parsing;
 import com.example.mykaraoke.util.RecyclerViewDecoration;
 import com.google.android.material.tabs.TabLayout;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     playlistItems = youTubeDataApi.playlistItems()
                             .list(Config.PART) // 많은 정보를 받기 위해 snippet으로 설정
                             .setPlaylistId(config) // 재생목록 아이디 지정
-                            .setMaxResults((long) 20) // 최대 받을 아이템 갯수 지정
+                            .setMaxResults((long) 50) // 최대 받을 아이템 갯수 지정
                             .setKey(Config.API_KEY) // api key 설정
                             .execute();
                 } catch (IOException e) {
@@ -162,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 for (PlaylistItem playlistItem : playlistItems.getItems()) {
-                    SongItem songItem = createSongItemBySnippet(playlistItem.getSnippet());
+                    SongItem songItem = Parsing.createSongItemBySnippet(playlistItem.getSnippet());
                     if (songItem == null) { // songItem이 null인 경우 private 아이템이므로 항목에 추가하지 않음.
                         continue;
                     }
@@ -223,36 +224,7 @@ public class MainActivity extends AppCompatActivity {
         trotSongRecyclerView.setLayoutManager(trotLinearLayoutManger);
     }
 
-    //youtube playlistItem의 snippet으로부터 songItem을 만드는 메소드
-    private SongItem createSongItemBySnippet(PlaylistItemSnippet snippet) {
-        SongItem songItem = new SongItem();
-        String description = snippet.getDescription(); //snippet으로부터 아이템의 description을 얻어옴
-        description = description.replace(" ", ""); //description으로부터 제목,가수에 대한 정보를 parsing하기 위하여 공백제거
-        description = description.replace("\n", "");//description으로부터 제목,가수에 대한 정보를 parsing하기 위하여 \n제거
 
-        //'제목' 값을 얻기 위한 문자열 parsing
-        String target = "제목";
-        int targetNum = description.indexOf(target);
-        if (targetNum == -1) { //targetNum이 -1인 경우는 private항목 이므로 아이템으로 만들수 없음 그러므로 null 리턴
-            return null;
-        }
-        String title = description.substring(targetNum + 3, (description.substring(targetNum).indexOf("가수") + targetNum));
-        songItem.setTitle(title);
-
-        //'가수' 값을 얻기 위한 문자열 parsing
-        target = "가수";
-        targetNum = description.indexOf(target);
-        String artist = description.substring(targetNum + 3, (description.substring(targetNum).indexOf("작사") + targetNum));
-        songItem.setArtist(artist);
-
-        //이미지 url
-        songItem.setImage(snippet.getThumbnails().getDefault().getUrl());
-
-        //video url
-        songItem.setVideoID(snippet.getResourceId().getVideoId());
-
-        return songItem;
-    }
 
     // 해당 기능의 권한이 있는지 확인할 수 있는 메소드
     private boolean hasPermissions(String... permissions) {

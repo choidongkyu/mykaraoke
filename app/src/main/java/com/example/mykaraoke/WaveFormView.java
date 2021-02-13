@@ -122,9 +122,10 @@ public class WaveFormView extends View {
                 //1픽셀에 그려질 최대값과 최소 값을 구함
                 low = (short) (data[0] * magnification);
                 high = (short) (data[data.length - 1] * magnification);
+                //data값이 0이라면 선을 그려줌
                 if (low == 0 && high == 0) {
-                    low = -1;
-                    high = 1;
+                    low = -3;
+                    high = 3;
                 }
                 lowY = height - (low + shortMaxValue) * height / dataRange;
                 highY = height - (high + shortMaxValue) * height / dataRange;

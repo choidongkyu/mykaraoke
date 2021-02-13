@@ -26,10 +26,21 @@ import com.example.mykaraoke.adapter.SongItem;
 import com.example.mykaraoke.thread.RecordThread;
 import com.example.mykaraoke.util.Config;
 import com.example.mykaraoke.util.JsonUtil;
+import com.example.mykaraoke.util.Snippet;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
     노래 선택시 노래를 부를수 있도록 동영상이 재생되는 activity

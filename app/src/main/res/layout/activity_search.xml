@@ -7,13 +7,26 @@
     android:orientation="vertical"
     tools:context=".SearchActivity">
 
-    <androidx.appcompat.widget.SearchView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:iconifiedByDefault="false"
-        app:queryHint="제목, 가수명 입력" />
+        android:layout_marginBottom="20dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_search"/>
+
+        <EditText
+            android:id="@+id/search_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="곡 제목 입력" />
+    </LinearLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

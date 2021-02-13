@@ -82,16 +82,18 @@ public class RecordThread extends Thread {
             e.printStackTrace();
         }
         while (isRecording) {
-            int ret = audioRecord.read(readData, 0, bufferSize);  //  AudioRecord의 read 함수를 통해 pcm data 를 읽어옴
+            audioRecord.read(readData, 0, bufferSize);  //  AudioRecord의 read 함수를 통해 pcm data 를 읽어옴
             //데이터를 핸들러를 통해 처리
             Message msg = handler.obtainMessage(0, readData);
             handler.sendMessage(msg);
+
+            //readData를 byteArray로 변환
             ByteBuffer byteBuffer = ByteBuffer.allocate(2 * bufferSize).order(ByteOrder.LITTLE_ENDIAN);
             for (short data : readData) {
                 byteBuffer.putShort(data);
             }
             try {
-                fos.write(byteBuffer.array());    //  읽어온 readData를 byteArray로 변환한 후 파일에 write 함
+                fos.write(byteBuffer.array());    //  읽어온 readData를 파일에 write 함
             } catch (IOException e) {
                 e.printStackTrace();
             }
