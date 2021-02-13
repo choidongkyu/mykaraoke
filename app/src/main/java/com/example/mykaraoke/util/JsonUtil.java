@@ -2,11 +2,8 @@ package com.example.mykaraoke.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.example.mykaraoke.adapter.SongItem;
-import com.google.gson.JsonObject;
-import com.google.gson.internal.$Gson$Preconditions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +36,7 @@ public class JsonUtil {
             songItem.setTitle(jsonObject.getString("title"));
             songItem.setArtist(jsonObject.getString("artist"));
             songItem.setImage(jsonObject.getString("Image"));
-            songItem.setVideoID(jsonObject.getString("VideoId"));
+            songItem.setVideoId(jsonObject.getString("VideoId"));
 
             songItemList.add(songItem); //만들어진 songItem을 반환 될 list에 저장
         }
@@ -52,7 +49,7 @@ public class JsonUtil {
         jsonObject.put("title", songItem.getTitle());
         jsonObject.put("artist", songItem.getArtist());
         jsonObject.put("Image", songItem.getImage());
-        jsonObject.put("VideoId", songItem.getVideoID());
+        jsonObject.put("VideoId", songItem.getVideoId());
 
         return jsonObject;
     }

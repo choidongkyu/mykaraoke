@@ -3,14 +3,10 @@ package com.example.mykaraoke;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,21 +22,9 @@ import com.example.mykaraoke.adapter.SongItem;
 import com.example.mykaraoke.thread.RecordThread;
 import com.example.mykaraoke.util.Config;
 import com.example.mykaraoke.util.JsonUtil;
-import com.example.mykaraoke.util.Snippet;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /*
     노래 선택시 노래를 부를수 있도록 동영상이 재생되는 activity
@@ -105,7 +89,7 @@ public class SongActivity extends AppCompatActivity {
         webSettings.setBuiltInZoomControls(false); // 화면 확대 축소 허용 여부
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE); // 브라우저 캐시 허용 여부
         webSettings.setDomStorageEnabled(true); // 로컬저장소 허용 여부
-        webView.loadUrl("https://www.youtube.com/watch?v=" + songItem.getVideoID()); // video 재생 시작
+        webView.loadUrl("https://www.youtube.com/watch?v=" + songItem.getVideoId()); // video 재생 시작
 
     }
 

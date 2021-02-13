@@ -9,8 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mykaraoke.adapter.SongItem;
-import com.example.mykaraoke.util.Parsing;
-import com.example.mykaraoke.util.Snippet;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

@@ -4,14 +4,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,7 +23,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import org.json.JSONException;
 
-import java.io.File;
 import java.util.ArrayList;
 
 //즐겨 찾기 목록 Adapter
@@ -141,7 +136,7 @@ public class BookMarkItemAdapter extends RecyclerView.Adapter<BookMarkItemAdapte
             sharedButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String videoId = songItemArrayList.get(selectPostion).getVideoID(); //선택된 아이템의 videoId를 얻어옴
+                    String videoId = songItemArrayList.get(selectPostion).getVideoId(); //선택된 아이템의 videoId를 얻어옴
                     Intent intent = new Intent(Intent.ACTION_SENDTO); //공유 데이터를 담을 인텐트 생성
                     intent.setType("text/plain"); //url을 공유하므로 text/plain을 선택
                     intent.putExtra(Intent.EXTRA_TEXT, "https://www.youtube.com/watch?v=" + videoId); //유튜브 동영상을 재생시킬 수 있는 url전송

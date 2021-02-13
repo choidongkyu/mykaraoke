@@ -3,9 +3,6 @@ package com.example.mykaraoke.util;
 import com.example.mykaraoke.adapter.SongItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 
-import java.util.ArrayList;
-import java.util.List;
-
 //data 파싱을 도와주는 클래스, 모듈처럼 사용
 public class Parsing {
     //youtube playlistItem의 snippet으로부터 songItem을 만드는 메소드
@@ -34,7 +31,7 @@ public class Parsing {
         songItem.setImage(snippet.getThumbnails().getDefault().getUrl());
 
         //video url
-        songItem.setVideoID(snippet.getResourceId().getVideoId());
+        songItem.setVideoId(snippet.getResourceId().getVideoId());
 
         return songItem;
     }
