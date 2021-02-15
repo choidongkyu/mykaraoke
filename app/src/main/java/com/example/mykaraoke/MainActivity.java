@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.SnapHelper;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import java.io.IOException;
 
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
+import com.google.firebase.installations.FirebaseInstallations;
 
 import java.util.ArrayList;
 
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         latestSongRecyclerView = findViewById(R.id.latestSongList);
         popularSongRecyclerView = findViewById(R.id.popularMusicList);
         trotSongRecyclerView = findViewById(R.id.trotMusicList);
+
 
         if (!hasPermissions(permissions)) { //녹음시 필요한 권한이 없다면 권한요청
             ActivityCompat.requestPermissions(this, permissions, 1);

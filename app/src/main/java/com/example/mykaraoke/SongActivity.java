@@ -1,9 +1,11 @@
 package com.example.mykaraoke;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,25 +18,39 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.mykaraoke.adapter.SongItem;
 import com.example.mykaraoke.thread.RecordThread;
+import com.example.mykaraoke.ui.login.LoginActivity;
 import com.example.mykaraoke.util.Config;
 import com.example.mykaraoke.util.JsonUtil;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /*
     노래 선택시 노래를 부를수 있도록 동영상이 재생되는 activity
 */
 public class SongActivity extends AppCompatActivity {
     private static final String TAG = SongActivity.class.getName();
-    private Button recordButton;
+    private Button recordButton, recommendButton;
     private RecordThread recordThread;
     private Toolbar toolbar;
     private SongItem songItem;
+    DatabaseReference ref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,11 +58,16 @@ public class SongActivity extends AppCompatActivity {
         setContentView(R.layout.activity_song);
         toolbar = findViewById(R.id.toolbar);
 
+        recommendButton = findViewById(R.id.recommendButton);
         recordButton = findViewById(R.id.recordButton); //녹음 버튼
         recordThread = new RecordThread(this);
 
         Intent intent = getIntent();
         songItem = (SongItem) intent.getSerializableExtra("songItem"); // recyclerview로부터 선택된 SongItem
+
+        //firebase database 연결
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        ref = db.getReference("users");
 
         if (songItem == null) { // 아이템을 제대로 받지 못한다면 activity 종료
             Log.e(TAG, "song Item does not exist. retry again");
@@ -72,6 +93,13 @@ public class SongActivity extends AppCompatActivity {
                     recordButton.setBackgroundColor(getColor(R.color.gray));
                     recordThread.stopRecordThread(); // 녹음중일때 button 클릭시 녹음 일시 중지
                 }
+            }
+        });
+
+        recommendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFcmDialog();
             }
         });
 
@@ -179,5 +207,90 @@ public class SongActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    private void showFcmDialog() {
+        final EditText editText = new EditText(this);
+        editText.setHint("닉네임을 입력하세요");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("친구에게 곡 추천하기");
+        builder.setView(editText);
+        builder.setPositiveButton("보내기",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
+                                //users에 해당하는 모든 데이터를 탐색
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    //입력된 닉네임이 데이터베이스에 있다면
+                                    if (snapshot.getKey().equals(editText.getText().toString())) {
+                                        String token = (String) snapshot.child("token").getValue(); //닉네임에 등록된 토큰값 얻어오기
+                                        sendFcm(token);
+                                        Toast.makeText(getApplicationContext(),"전송완료.",Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                }
+                                Toast.makeText(getApplicationContext(),"해당 닉네임이 존재하지 않습니다.",Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+                });
+        builder.setNegativeButton("취소",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        builder.show();
+    }
+
+    private void sendFcm(String token) {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    // FCM 메시지 생성
+                                    JSONObject root = new JSONObject();
+                                    JSONObject notification = new JSONObject();
+                                    notification.put("body", "test");
+                                    notification.put("title", getString(R.string.app_name));
+                                    root.put("notification", notification);
+                                    root.put("to", token);
+
+
+                                    URL Url = new URL("https://fcm.googleapis.com/fcm/send");
+                                    HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
+                                    conn.setRequestMethod("POST");
+                                    conn.setDoOutput(true);
+                                    conn.setDoInput(true);
+                                    conn.addRequestProperty("Authorization", "key=" + Config.SERVER_KEY);
+                                    conn.setRequestProperty("Accept", "application/json");
+                                    conn.setRequestProperty("Content-type", "application/json");
+                                    OutputStream os = conn.getOutputStream();
+                                    os.write(root.toString().getBytes("utf-8"));
+                                    os.flush();
+                                    conn.getResponseCode();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
     }
 }

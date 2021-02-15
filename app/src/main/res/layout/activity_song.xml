@@ -44,12 +44,28 @@
         android:layout_weight="0.5"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/recordButton"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:background="@color/gray"
-            android:text="녹음시작" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/recordButton"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                android:text="녹음시작"
+                android:layout_marginRight="100dp"/>
+
+            <Button
+                android:id="@+id/recommendButton"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                android:text="이 노래 추천하기" />
+        </LinearLayout>
+
+
+
+
 
         <View
             android:layout_width="match_parent"

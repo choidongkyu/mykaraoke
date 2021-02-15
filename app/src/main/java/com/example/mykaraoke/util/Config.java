@@ -14,4 +14,6 @@ public class Config {
     public static String AUTO_WAVEFORM_SETTING = "auto_waveform_setting";
     public static String SETTINGS_KEY = "settings_key";
     public static String BOOKMARKS_KEY = "bookmarks_key";
+    public static String TOKEN_KEY = "token_key";
+    public static String SERVER_KEY = "AAAAneka5d0:APA91bFVbp-S_yt7kiNabG9QS4UE_vy9BVc12PwV9GfrFd-D7DsNTE2jelKoHjl0tZV_Z4WsSyP_FD5yZj5pyKS1QWfqM8BoOOjnF4eprahnVhtDRR-36mchH3NBRnsFAMNHOJa_f7Tq";
 }
