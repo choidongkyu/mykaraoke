@@ -51,6 +51,7 @@ public class SongActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private SongItem songItem;
     DatabaseReference ref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +66,7 @@ public class SongActivity extends AppCompatActivity {
         Intent intent = getIntent();
         songItem = (SongItem) intent.getSerializableExtra("songItem"); // recyclerview로부터 선택된 SongItem
 
-        //firebase database 연결
+        //fcm 토큰을 얻기 위한 firebase database 연결
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         ref = db.getReference("users");
 
@@ -227,12 +228,12 @@ public class SongActivity extends AppCompatActivity {
                                     //입력된 닉네임이 데이터베이스에 있다면
                                     if (snapshot.getKey().equals(editText.getText().toString())) {
                                         String token = (String) snapshot.child("token").getValue(); //닉네임에 등록된 토큰값 얻어오기
-                                        sendFcm(token);
-                                        Toast.makeText(getApplicationContext(),"전송완료.",Toast.LENGTH_SHORT).show();
+                                        sendFcm(token);//상대방에게 fcm메시지 보내기
+                                        Toast.makeText(getApplicationContext(), "전송완료.", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
                                 }
-                                Toast.makeText(getApplicationContext(),"해당 닉네임이 존재하지 않습니다.",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "해당 닉네임이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -251,46 +252,53 @@ public class SongActivity extends AppCompatActivity {
         builder.show();
     }
 
+    //상대방에게 fcm메시지를 보내는 메소드
     private void sendFcm(String token) {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                new Thread(new Runnable() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    // FCM 메시지 생성
-                                    JSONObject root = new JSONObject();
-                                    JSONObject notification = new JSONObject();
-                                    notification.put("body", "test");
-                                    notification.put("title", getString(R.string.app_name));
-                                    root.put("notification", notification);
-                                    root.put("to", token);
+                    public void run() {
+                        try {
+                            // FCM 메시지 생성
+                            JSONObject root = new JSONObject();
+                            JSONObject notification = new JSONObject();
+                            JSONObject data = new JSONObject();
+                            notification.put("body", songItem.getTitle() + "을 부르러 가보실레요?");
+                            notification.put("title", Config.USER_NAME + "님이 아래의 곡을 추천하였습니다!");
+                            data.put("videoId", songItem.getVideoId());
+                            data.put("songTitle", songItem.getTitle());
+                            data.put("songArtist", songItem.getArtist());
+                            data.put("songImage", songItem.getImage());
+                            root.put("notification", notification);
+                            root.put("data", data);
+                            root.put("to", token);
 
 
-                                    URL Url = new URL("https://fcm.googleapis.com/fcm/send");
-                                    HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
-                                    conn.setRequestMethod("POST");
-                                    conn.setDoOutput(true);
-                                    conn.setDoInput(true);
-                                    conn.addRequestProperty("Authorization", "key=" + Config.SERVER_KEY);
-                                    conn.setRequestProperty("Accept", "application/json");
-                                    conn.setRequestProperty("Content-type", "application/json");
-                                    OutputStream os = conn.getOutputStream();
-                                    os.write(root.toString().getBytes("utf-8"));
-                                    os.flush();
-                                    conn.getResponseCode();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }).start();
+                            URL Url = new URL("https://fcm.googleapis.com/fcm/send");
+                            HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
+                            conn.setRequestMethod("POST");
+                            conn.setDoOutput(true);
+                            conn.setDoInput(true);
+                            conn.addRequestProperty("Authorization", "key=" + Config.SERVER_KEY);
+                            conn.setRequestProperty("Accept", "application/json");
+                            conn.setRequestProperty("Content-type", "application/json");
+                            OutputStream os = conn.getOutputStream();
+                            os.write(root.toString().getBytes("utf-8"));
+                            os.flush();
+                            conn.getResponseCode();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
+                }).start();
+            }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                    }
-                });
+            }
+        });
     }
 }

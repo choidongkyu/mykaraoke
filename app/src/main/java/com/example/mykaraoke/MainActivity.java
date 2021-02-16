@@ -51,13 +51,17 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView popularSongRecyclerView;
     private RecyclerView trotSongRecyclerView;
 
-
+    private SongItem recommendSongItem;
     private YouTube youTubeDataApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if(getIntent().getSerializableExtra("recommendSongItem") != null){ // fcm push에서 activity 실행된다면 songItem 존재
+            recommendSongItem = (SongItem) getIntent().getSerializableExtra("recommendSongItem");
+        }
 
         latestSongItemArrayList = new ArrayList<>(); // 최신가요를 담을 list
         popularSongItemArrayList = new ArrayList<>(); // 인기가요를 담을 list
@@ -119,6 +123,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        //fcm에서 app실행 시 추천곡을 부르는 화면으로 바로 실행
+        if(recommendSongItem != null) {
+            Intent intent = new Intent(MainActivity.this, SongActivity.class);
+            intent.putExtra("songItem", recommendSongItem);
+            startActivity(intent);
+            recommendSongItem = null;
+        }
         super.onResume();
     }
 

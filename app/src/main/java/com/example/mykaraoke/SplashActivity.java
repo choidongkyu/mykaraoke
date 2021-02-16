@@ -23,12 +23,21 @@ import java.util.List;
 //fireBase로부터 data를 받는 splash activity
 public class SplashActivity extends AppCompatActivity {
     public static ArrayList<SongItem> songItemList;
+    private SongItem recommendSongItem = null; //추천된 songItem
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //firebase realtime database에 연결
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference ref = db.getReference("songs");
+        if(getIntent().getExtras() != null){ // fcm push에서 activity 실행된다면 song data가 존재
+            recommendSongItem = new SongItem();
+            recommendSongItem.setVideoId(getIntent().getExtras().getString("videoId"));
+            recommendSongItem.setTitle(getIntent().getExtras().getString("songTitle"));
+            recommendSongItem.setArtist(getIntent().getExtras().getString("songArtist"));
+            recommendSongItem.setImage(getIntent().getExtras().getString("songImage"));
+        }
+
 
         //app실행시 한번만 data받을수 있도록 singleValueEvent를 리스너로 설정
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -40,6 +49,9 @@ public class SplashActivity extends AppCompatActivity {
 
                 songItemList = (ArrayList<SongItem>) snapshot.getValue(genericTypeIndicator);
                 Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                if(recommendSongItem != null) {//fcm에서 app이 시작되었다면 songItem 존재함
+                    intent.putExtra("recommendSongItem", recommendSongItem);//songItem 전달
+                }
                 startActivity(intent);
                 finish();
             }

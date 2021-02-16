@@ -32,11 +32,15 @@ import java.util.Iterator;
 public class LoginActivity extends AppCompatActivity {
     private DatabaseReference ref;
     private EditText usernameEditText;
+    private SongItem recommendSongItem = null;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        if(getIntent().getSerializableExtra("recommendSongItem") != null){ // fcm push에서 activity 실행된다면 songItem 존재
+            recommendSongItem = (SongItem) getIntent().getSerializableExtra("recommendSongItem");
+        }
         usernameEditText = findViewById(R.id.username);
         final Button loginButton = findViewById(R.id.login);
 
@@ -58,8 +62,12 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "다른기기에서 해당 닉네임을 사용하고 있습니다. 다시 시도하세요.", Toast.LENGTH_LONG).show();
                                     return;
                                 }
+                                Config.USER_NAME = usernameEditText.getText().toString(); //유저의 이름 저장
                                 Toast.makeText(getApplicationContext(), "접속하였습니다.", Toast.LENGTH_LONG).show();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                if(recommendSongItem != null) { // fcm에서 app이 시작되었다면 videoid 전달
+                                    intent.putExtra("recommendSongItem", recommendSongItem);
+                                }
                                 startActivity(intent);
                                 finish();
                                 return;
