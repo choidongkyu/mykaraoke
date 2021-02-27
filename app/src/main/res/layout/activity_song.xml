@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,12 +9,14 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
     </androidx.appcompat.widget.Toolbar>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
         tools:ignore="WebViewLayout">
 
         <WebView
@@ -22,56 +24,110 @@
             android:layout_width="match_parent"
             android:layout_height="500dp" />
 
-        <View
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="280dp"
             android:background="#2F2F30"
-            android:clickable="true">
-        </View>
+            android:clickable="true"
+            android:orientation="vertical">
 
-        <com.example.mykaraoke.WaveFormView
-            android:id="@+id/waveform_view"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginTop="380dp"/>
-    </FrameLayout>
+            <com.example.mykaraoke.WaveFormView
+                android:id="@+id/waveform_view"
+                android:layout_width="match_parent"
+                android:layout_height="60dp" />
 
+            <LinearLayout
+                android:id="@+id/buttonPanel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:orientation="vertical">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/recordButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="녹음시작"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/recordButton"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:background="@color/gray"
-                android:text="녹음시작"
-                android:layout_marginRight="100dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/recommendButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="친구에게 추천하기"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/callButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="친구와 노래부르기"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"/>
+            </LinearLayout>
 
-            <Button
-                android:id="@+id/recommendButton"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:background="@color/gray"
-                android:text="이 노래 추천하기" />
+            <WebView
+                android:id="@+id/webRtcWebView"
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:background="#2F2F30"/>
         </LinearLayout>
 
 
-
-
-
-        <View
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5" />
+            android:layout_height="wrap_content"
+            android:id="@+id/callLayout"
+            android:background="#ccc"
+            android:visibility="gone"
+            android:layout_below="@+id/toolbar">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:textStyle="bold"
+                android:id="@+id/incomingCallTxt"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_call_24"
+                android:id="@+id/acceptBtn"
+                android:layout_toStartOf="@+id/rejectBtn"
+                android:padding="20dp"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_call_end_24"
+                android:id="@+id/rejectBtn"
+                android:padding="20dp"
+                android:layout_alignParentEnd="true"/>
+        </RelativeLayout>
+    </FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/callControlLayout"
+        android:visibility="gone"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="#99000000"
+            android:padding="4dp"
+            android:src="@drawable/ic_baseline_videocam_24"
+            android:id="@+id/toggleVideoBtn"/>
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="#99000000"
+            android:layout_marginStart="36dp"
+            android:id="@+id/toggleAudioBtn"
+            android:src="@drawable/ic_baseline_mic_24"/>
     </LinearLayout>
 
-</LinearLayout>
+
+</RelativeLayout>

@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int LIBRARY = 2;
     private static final int SETTING = 3;
     private static final int SPAN_COUNT = 5; // 한 화면에 보이는 data 수
-    private final String[] permissions = {Manifest.permission.RECORD_AUDIO};
+    private final String[] permissions = {Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
     private ArrayList<SongItem> latestSongItemArrayList;
     private ArrayList<SongItem> popularSongItemArrayList;
     private ArrayList<SongItem> trotSongItemArrayList;
