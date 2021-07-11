@@ -13,7 +13,7 @@ let peer
 
 function init(userId) {
     peer = new Peer(userId, {
-        host: '192.168.0.4',
+        host: '192.168.0.9',
         port: 3618,
         path: '/peerjs'
     })

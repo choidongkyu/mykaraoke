@@ -75,8 +75,8 @@ public class JsonUtil {
         } else { //기존에 저장된 shraredPref가 있다면
             jsonArray = new JSONArray(sharedPreferences.getString(Config.BOOKMARKS_KEY, null));//기존에 있는 값들을 JsonArray로 다시 생성
         }
-        jsonArray.put(JsonUtil.songItemToJsonObject(songItem));// songItem을 jsonObject로 변환 후 jsonArray에 put
-        editor.putString(Config.BOOKMARKS_KEY, jsonArray.toString());//아이템이 추가된 jsonArray를 sharedPref에 put
+        jsonArray.put(JsonUtil.songItemToJsonObject(songItem)); //songItem을 jsonObject로 변환 후 jsonArray에 put
+        editor.putString(Config.BOOKMARKS_KEY, jsonArray.toString()); //아이템이 추가된 jsonArray를 sharedPref에 put
         editor.apply();//저장
     }
 
