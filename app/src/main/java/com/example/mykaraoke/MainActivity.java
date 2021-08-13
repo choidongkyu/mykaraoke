@@ -110,6 +110,18 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                switch (tab.getPosition()) {
+                    case SEARCH: // search Tab을 선택 했을때 검색 activity로 화면 전환
+                        startActivity(new Intent(MainActivity.this, SearchActivity.class));
+                        break;
+                    case LIBRARY: // 보관함 Tab을 선택 했을때 보관함 activity로 화면 전환
+                        startActivity(new Intent(MainActivity.this, LibraryActivity.class));
+                        break;
+                    case SETTING: // setting tab을 선택 했을때 노래 activity로 화면 전환
+                        startActivity(new Intent(MainActivity.this, SettingActivity.class));
+                        break;
+                    default:
+                }
             }
         });
 
