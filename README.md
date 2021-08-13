@@ -1,16 +1,45 @@
-# mykaraoke
+# 모바일 노래방
 
-유튜브 API를 이용하여 집에서 노래방을 이용 할수 있는 App
+## 개요
 
-### 1. Initial screen
+---
 
-<img src="https://user-images.githubusercontent.com/39241588/107059681-6dc48980-6819-11eb-83ea-fb4ca563b5af.jpg" width="35%" height="35%">
+![Untitled](https://user-images.githubusercontent.com/39241588/129314119-4fc02276-5301-4c4a-90c3-642a142a7159.png)
 
-### 2. Added screen
+집에서 **노래방의 모든 곡**들을 부를 수 있는 Android 애플리케이션 입니다.
 
-<img src="https://user-images.githubusercontent.com/39241588/107059783-8e8cdf00-6819-11eb-9e1a-b298120205f7.jpg" width="35%" height="35%">
+</br>
+</br>
 
+## 기술 스택
 
-### 3. Added screen
+---
 
-<img src="https://user-images.githubusercontent.com/39241588/107059849-a19faf00-6819-11eb-9216-295e54a8d8a7.jpg" width="35%" height="35%">
+- 개발 환경: Android Studio, WSL2
+
+- 개발 언어: JAVA, PYTHON, JAVASCRIPT
+
+- 데이터베이스: Firebase Realtimedatabase
+
+- 서버: FIREBASE, NODE.JS
+
+- 디자인 패턴 : MVC
+
+</br>
+</br>
+
+## 주요기능
+
+---
+
+- 노래방 기능
+
+- 녹음 및 녹음파일 공유 기능
+
+- 즐겨찾기 기능
+
+- 영상통화로 노래 들려주기 기능
+
+- 친구에게 노래추천(FCM)
+
+- 유튜브 데이터 크롤링
